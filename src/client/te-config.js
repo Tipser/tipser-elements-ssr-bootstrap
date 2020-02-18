@@ -1,7 +1,7 @@
 export const tipserConfig = {
-    lang: 'en',
+    lang: 'en-US',
     env: 'dev',
-    primaryColor: 'red',
+    primaryColor: '#ff0000',
     useDefaultErrorHandler: true,
     openOldDialog: true,
     eventsHandlers: {

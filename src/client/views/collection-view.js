@@ -20,6 +20,7 @@ export class CollectionView extends Component {
                     <div className="container">
                         <h4>Collection</h4>
                         <Collection collectionId={collectionId} />
+                        <Collection collectionId={collectionId} carousel/>
                     </div>
                 </main>
             </>
