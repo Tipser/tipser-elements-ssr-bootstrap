@@ -1,12 +1,12 @@
 import 'isomorphic-fetch'
 
-import App, {ROUTES} from '../client/App';
 import React from 'react';
 import {StaticRouter, matchPath} from 'react-router-dom';
 import express from 'express';
 import {renderToString} from 'react-dom/server';
-import {tipserConfig} from "../client/te-config";
 import {TipserElementsProvider, StateBuilder} from '@tipser/tipser-elements';
+
+import App, {ROUTES} from '../client/App';
 
 const assets = require(process.env.RAZZLE_ASSETS_MANIFEST);
 
@@ -41,11 +41,10 @@ server
             return acc;
         }, {productIds: [], collectionIds: [], shouldFetchStore: false});
 
-        stateBuilder.buildState(dataToFetch.productIds, dataToFetch.collectionIds, dataToFetch.shouldFetchStore, tipserConfig.env).then(initialState => {
+        stateBuilder.buildState(dataToFetch.productIds, dataToFetch.collectionIds, dataToFetch.shouldFetchStore).then(initialState => {
             const context = {};
             const markup = renderToString(
-                <TipserElementsProvider posId={POS_ID} config={tipserConfig} isSentryEnabled={false}
-                                        initialState={initialState}>
+                <TipserElementsProvider posId={POS_ID} initialState={initialState}>
                     <StaticRouter context={context} location={req.url}>
                         <App/>
                     </StaticRouter>
