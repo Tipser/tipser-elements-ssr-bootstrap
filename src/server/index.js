@@ -4,7 +4,12 @@ import React from 'react';
 import {StaticRouter, matchPath} from 'react-router-dom';
 import express from 'express';
 import {renderToString} from 'react-dom/server';
-import {TipserElementsProvider, StateBuilder} from '@tipser/tipser-elements';
+import {
+    TipserElementsProvider,
+    StateBuilder,
+    SsrTipserElementsProvider,
+    ComponentsStateSsrManager
+} from '@tipser/tipser-elements';
 
 import App, {ROUTES} from '../client/App';
 
@@ -31,7 +36,7 @@ server
     .get('/*', (req, res) => {
         const {path} = req;
         const matchedComponents = matchComponents(ROUTES, path);
-        const dataToFetch = matchedComponents.reduce((acc, { component, match }) => {
+        const dataToFetch = matchedComponents.reduce((acc, {component, match}) => {
             if (component.getTipserDataToFetch) {
                 const [productIds, collectionIds, shouldFetchStore] = component.getTipserDataToFetch(match);
                 acc.productIds = [...new Set(acc.productIds.concat(productIds))];
@@ -40,16 +45,23 @@ server
             }
             return acc;
         }, {productIds: [], collectionIds: [], shouldFetchStore: false});
+        const componentsStateSsrManager = new ComponentsStateSsrManager(POS_ID, 'prod')
+        const context = {};
 
-        stateBuilder.buildState(dataToFetch.productIds, dataToFetch.collectionIds, dataToFetch.shouldFetchStore).then(initialState => {
-            const context = {};
-            const markup = renderToString(
-                <TipserElementsProvider posId={POS_ID} initialState={initialState}>
+        const toRender = (
+            <TipserElementsProvider posId={POS_ID}>
+                <SsrTipserElementsProvider componentsStateManager={componentsStateSsrManager}>
                     <StaticRouter context={context} location={req.url}>
                         <App/>
                     </StaticRouter>
-                </TipserElementsProvider>
-            );
+                </SsrTipserElementsProvider>
+            </TipserElementsProvider>
+        );
+
+        renderToString(toRender);
+
+        componentsStateSsrManager.buildState().then(() => {
+            const markup = renderToString(toRender);
 
             if (context.url) {
                 res.redirect(context.url);
@@ -66,15 +78,15 @@ server
                         assets.client.css
                             ? `<link rel="stylesheet" href="${assets.client.css}">`
                             : ''
-                        }
+                    }
         ${
                         process.env.NODE_ENV === 'production'
                             ? `<script src="${assets.client.js}" defer></script>`
                             : `<script src="${assets.client.js}" defer crossorigin></script>`
-                        }
+                    }
     </head>
     <body>
-        <script>window.TIPSER_STATE = ${JSON.stringify(initialState)}</script>
+        <script>window.TIPSER_STATE = ${JSON.stringify(componentsStateSsrManager.getState())}</script>
         <div id="root">${markup}</div>
     </body>
 </html>`
