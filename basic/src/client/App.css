@@ -1,0 +1,64 @@
+@import '~@tipser/tipser-elements/dist/index.css';
+
+body {
+  font-size: 16px;
+}
+
+h2, h3 {
+  background: #eee;
+  text-align: center;
+  padding: 20px 0;
+  margin: 0;
+}
+h2 {
+  margin: 40px 0 0;
+}
+
+.tipser-element a {
+  color: #fff;
+}
+
+.menu {
+  list-style: none;
+  padding-left: 0;
+}
+
+.menu-item {
+  padding-left: 35px;
+  text-transform: uppercase;
+  color: white;
+}
+
+.link {
+  color: blue;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  monospace;
+}
+
+footer {
+  height: 300px;
+  background: #eee;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid #e0e0e0;
+}
+
+.footer-text {
+  color: #bbbbbb;
+  font-size: calc(10px + 2vmin);
+  padding: 40px;
+}
+
+.main{
+  margin-top: 64px;
+}
+
+.container{
+  max-width: 1024px;
+  margin: 0 auto;
+}
