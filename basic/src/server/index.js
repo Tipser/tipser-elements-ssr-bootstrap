@@ -8,7 +8,6 @@ import {
     TipserElementsProvider,
     StateBuilder,
     SsrTipserElementsProvider,
-    ComponentsStateSsrManager
 } from '@tipser/tipser-elements';
 
 import App, {ROUTES} from '../client/App';
