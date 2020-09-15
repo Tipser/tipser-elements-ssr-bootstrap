@@ -6,45 +6,22 @@ import express from 'express';
 import {renderToString} from 'react-dom/server';
 import {
     TipserElementsProvider,
-    StateBuilder,
     SsrTipserElementsProvider,
     ComponentsStateSsrManager
 } from '@tipser/tipser-elements';
 
-import App, {ROUTES} from '../client/App';
+import App from '../client/App';
 
 const assets = require(process.env.RAZZLE_ASSETS_MANIFEST);
 
 const server = express();
 
 const POS_ID = '59e86b79b8f3f60a94ecd26a';
-const stateBuilder = new StateBuilder(POS_ID);
-
-function matchComponents(routes, url) {
-    return routes
-        .map(route => {
-            const match = matchPath(url, {path: route.path, exact: route.exact});
-            const {component} = route;
-            return {match, component};
-        })
-        .filter(({match}) => !!match);
-}
 
 server
     .disable('x-powered-by')
     .use(express.static(process.env.RAZZLE_PUBLIC_DIR))
     .get('/*', (req, res) => {
-        const {path} = req;
-        const matchedComponents = matchComponents(ROUTES, path);
-        const dataToFetch = matchedComponents.reduce((acc, {component, match}) => {
-            if (component.getTipserDataToFetch) {
-                const [productIds, collectionIds, shouldFetchStore] = component.getTipserDataToFetch(match);
-                acc.productIds = [...new Set(acc.productIds.concat(productIds))];
-                acc.collectionIds = [...new Set(acc.collectionIds.concat(collectionIds))];
-                acc.shouldFetchStore = acc.shouldFetchStore || shouldFetchStore;
-            }
-            return acc;
-        }, {productIds: [], collectionIds: [], shouldFetchStore: false});
         const componentsStateSsrManager = new ComponentsStateSsrManager(POS_ID, 'prod')
         const context = {};
 
