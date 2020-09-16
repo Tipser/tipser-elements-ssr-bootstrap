@@ -44,8 +44,11 @@ server
             }
             return acc;
         }, {productIds: [], collectionIds: [], shouldFetchStore: false});
-        stateBuilder.buildState(dataToFetch.productIds, dataToFetch.collectionIds, dataToFetch.shouldFetchStore).then((initialState) => {
-
+        stateBuilder.buildState({
+            productIds: dataToFetch.productIds,
+            collectionIds: dataToFetch.collectionIds,
+            shouldFetchStore: dataToFetch.shouldFetchStore
+        }).then((initialState) => {
             const context = {};
 
             const toRender = (

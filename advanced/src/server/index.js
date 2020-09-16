@@ -35,7 +35,7 @@ server
             </TipserElementsProvider>
         );
 
-        renderToString(toRender);
+        renderToString(toRender); // "dry run" that is used to figure out ids in use
 
         componentsStateSsrManager.buildState().then(() => {
             const markup = renderToString(toRender);
