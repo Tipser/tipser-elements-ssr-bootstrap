@@ -8,7 +8,6 @@ import {
     TipserElementsProvider,
     StateBuilder,
     SsrTipserElementsProvider,
-    ComponentsStateSsrManager
 } from '@tipser/tipser-elements';
 
 import App, {ROUTES} from '../client/App';
@@ -45,22 +44,23 @@ server
             }
             return acc;
         }, {productIds: [], collectionIds: [], shouldFetchStore: false});
-        const componentsStateSsrManager = new ComponentsStateSsrManager(POS_ID, 'prod')
-        const context = {};
+        stateBuilder.buildState({
+            productIds: dataToFetch.productIds,
+            collectionIds: dataToFetch.collectionIds,
+            shouldFetchStore: dataToFetch.shouldFetchStore
+        }).then((initialState) => {
+            const context = {};
 
-        const toRender = (
-            <TipserElementsProvider posId={POS_ID}>
-                <SsrTipserElementsProvider componentsStateManager={componentsStateSsrManager}>
-                    <StaticRouter context={context} location={req.url}>
-                        <App/>
-                    </StaticRouter>
-                </SsrTipserElementsProvider>
-            </TipserElementsProvider>
-        );
+            const toRender = (
+                <TipserElementsProvider posId={POS_ID}>
+                    <SsrTipserElementsProvider initialState={initialState}>
+                        <StaticRouter context={context} location={req.url}>
+                            <App/>
+                        </StaticRouter>
+                    </SsrTipserElementsProvider>
+                </TipserElementsProvider>
+            );
 
-        renderToString(toRender);
-
-        componentsStateSsrManager.buildState().then(() => {
             const markup = renderToString(toRender);
 
             if (context.url) {
@@ -86,7 +86,7 @@ server
                     }
     </head>
     <body>
-        <script>window.TIPSER_STATE = ${JSON.stringify(componentsStateSsrManager.getState())}</script>
+        <script>window.TIPSER_STATE = ${JSON.stringify(initialState)}</script>
         <div id="root">${markup}</div>
     </body>
 </html>`

@@ -4,8 +4,10 @@ npm-debug.log*
 .DS_Store
 
 coverage
-node_modules
-build
+basic/node_modules
+basic/build
+advanced/node_modules
+advanced/build
 .env.local
 .env.development.local
 .env.test.local
